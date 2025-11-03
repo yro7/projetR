@@ -1,5 +1,5 @@
 ---
-title: "Aide pour le rapport du projet"
+title: "Rapport de projet Statistiques & Analyses de données"
 author: 
   - name: "Adam Malesys"
   - name: "Amélie Pujol"
@@ -35,7 +35,7 @@ library(reshape2)
 
 ```{r}
 #| echo: false
-#| label: tbl-tabiris
+#| label: tbl-datagym
 #| tbl-cap: "Les premières lignes du jeu de données DataGym"
 
 Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
@@ -57,7 +57,7 @@ Pour étudier les corrélations et liaisons entre les variables, nous étudions 
 
 ```{r}
 #| echo: false
-#| label: tbl-tabiris
+#| label: tbl-datagym
 #| tbl-cap: "Les premières lignes du jeu de données DataGym"
 
 Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
@@ -67,23 +67,63 @@ Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
 corrplot(cor(Data[,-c(2,8,12)]), method="ellipse", type="lower")
 ```
 
-Certaines variables sont fortement corrélées, comme `bmi` et `weight` ou `fat` et `calories`.
+Certaines variables sont fortement corrélées, comme `bmi` et `weight` ou `fat` et `calories`. Cela justifie l'utilisation d'une ACP pour réduire la dimensionnalité du jeu de données. Cependant, beaucoup de ces variables n'étant pas corrélées du tout, on ne pourra pas projeter les individus dans un espace de très faible dimension.
 
-### La variable *Species*
-
-Nous commençons par la variable *Species* (vecteur $Y$) qui est une variable qualitative. La @fig-species nous permet de contrôler que nous avons bien $50$ individus par espèce.
+### Les 3 variables qualitatives
 
 ```{r}
 #| echo: false
-#| fig-cap: "Barplot de la variable Species"
+#| fig-cap: "Barplot des variables qualitatives"
 #| label: fig-species
 #| fig-height: 2
 
-ggplot(iris,aes(x=Species))+
+ggplot(Data,aes(x=type))+
+  geom_bar()
+
+ggplot(Data,aes(x=gender))+
+  geom_bar()
+
+ggplot(Data,aes(x=level))+
   geom_bar()
 ```
 
-### Les 4 variables quantitatives
+On remarque que le jeu de données est assez équilibré en terme de genre ou de type de sport, cependant il y a peu d'individus de niveau 3.
+
+### Relations qualitatives-quantitatives
+
+```{r}
+#| echo: false
+#| eval: false
+#| fig-cap: "Barplot des relations quantitatives-qualitatives"
+#| fig-height: 2
+
+ggplot(Data, aes(x=gender, y=bmi, fill=gender)) + geom_boxplot()
+ggplot(Data, aes(x=type, y=calories, fill=type)) + geom_boxplot()
+
+# TODO CHOISIR LESQUELS AFFICHER
+
+ggplot(Data,aes(x=type,y=calories)) +
+  geom_violin() +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+
+ggplot(Data,aes(x=gender,y=bmi)) +
+  geom_violin() +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+
+ggplot(Data,aes(x=gender,y=bmi)) +
+  geom_violin() +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+
+ggplot(Data,aes(x=gender,y=bmi)) +
+  geom_violin() +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+différents profils: en fonction du type \> différente répartition des IMC (strength souvent + lourds)
+
+## ACP
+
+## MCA
 
 Nous nous intéressons maintenant aux 4 variables quantitatives (matrice $X$). La @fig-corrplot montre les corrélations entre les 4 variables. On peut remarquer que la largeur et la longuer des pétales sont fortement corrélées positivement, ce n'est pas le cas pour les sépales.
 
@@ -92,7 +132,6 @@ Nous nous intéressons maintenant aux 4 variables quantitatives (matrice $X$). L
 #| label: fig-corrplot
 #| fig-cap: "Matrice des corrélations entre les 4 variables quantitatives"
 #| fig-height: 3
-corrplot(cor(iris[,-5]), method="ellipse")
 ```
 
 A l'aide de la librairie `FactoMineR`, on met en place une ACP. On représente en @fig-ACP les individus projetés sur le premier plan factoriel, la couleur correspondant à l'espèce ainsi que les corrélations des variables quantitatives initiales avec les deux premières composantes principales.
@@ -105,7 +144,6 @@ A l'aide de la librairie `FactoMineR`, on met en place une ACP. On représente e
 #| fig-subcap: 
 #|   - "Projection des individus dans le premier plan factoriel"
 #|   - "Corrélation entre les variables et les deux premières composantes principales"
-respca=PCA(iris,quali.sup=5,graph=F)
 fviz_pca_ind(respca,label="none",habillage=5)+
   theme(legend.position="bottom")
 fviz_pca_var(respca) 
@@ -119,10 +157,6 @@ On peut remarquer que les *Setosa* se distinguent des deux autres espèces princ
 #| message: false
 #| label: fig-violin
 #| fig-cap: "Violin plots de la largeur des sépales pour chaque espèce"
-
-ggplot(iris,aes(x=Species,y=Sepal.Width)) +
-  geom_violin() +
-  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
 ```
 
 # References
