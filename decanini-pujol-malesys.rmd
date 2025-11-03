@@ -2,7 +2,11 @@
 
 
 
+
+```{r}
+#| echo: True
 Data = read.table("DataGym-projet4modIA-2526",header=TRUE)
+```
 
 
 
