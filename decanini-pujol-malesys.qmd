@@ -95,7 +95,7 @@ Nous nous intéressons maintenant aux 4 variables quantitatives (matrice $X$). L
 corrplot(cor(iris[,-5]), method="ellipse")
 ```
 
-A l'aide de la librairie `FactoMineR`, on met en place une ACP. On représente en @fig-ACP les individus projetés sur le premier plan factoriel, la couleur correspondant à l'espèce ainsi que les corrélations des variables quantitatives initiales avec les deux premières composantes principales.
+A l'aide de la librairie `FactoMineR`, on met en place une ACP. On représente en @fig-ACP les individus projetés sur le premier plan factoriel, la couleur correspondant à l'espèce ainsi que les corrélations des variables quantitatives initiales avec les deux premières composantes principales. Non Marin c'est nul
 
 ```{r}
 #| fig-height: 5
