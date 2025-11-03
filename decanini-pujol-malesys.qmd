@@ -1,8 +1,17 @@
-# todo test
+# Projet AD et EMS
 
+```{r}
+#| warning: false
+#| message: false
 
-
-
+library(ggplot2)
+library(gridExtra)
+library(reshape2)
+library(FactoMineR)
+library(factoextra)
+library(corrplot)
+library(reticulate)
+```
 
 ```{r}
 #| echo: True
@@ -13,16 +22,30 @@ Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
 head(Data)
 ```
 
+```{r}
+corrplot(cor(Data[,-c(2,8,12)]), method="ellipse")
+```
 
+# ACP centrée réduite (car les variables ne sont pas à la même échelle).
 
 ```{r}
-Data$type=as.factor(Data$type)
-Data$level=as.factor(Data$level)
-Data$gender=as.factor(Data$gender)
-head(Data)
+respca <-PCA(Data,scale.unit=T,graph=F,quali.sup = c(2,8,12))
+fviz_eig(respca)
+respca$eig
 ```
 
 
 ```{r}
-corrplot(cor(Data[,-c(2,8,12)]), method="ellipse", type="lower")
+fviz_pca_ind(respca,habillage=2)
+fviz_pca_var(respca)
+```
+
+```{r}
+fviz_pca_ind(respca,habillage=12)
+```
+
+
+
+```{r}
+fviz_contrib(respca,choice="ind",axes=1)
 ```
