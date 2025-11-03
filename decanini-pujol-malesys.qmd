@@ -1,28 +1,128 @@
-# todo test
-
-
-
-
+---
+title: "Aide pour le rapport du projet"
+author: 
+  - name: "Adam Malesys"
+  - name: "Amélie Pujol"
+  - name: "Marin Decanini"
+date: "`r Sys.Date()`"
+bibliography: exbiblio.bib
+format: 
+  pdf:
+    toc: TRUE
+    toc_depth: 2
+    number-sections: true
+    header-includes:
+    - \usepackage{color}
+    - \newcommand{\X}{\mathbf{X}}
+execute: 
+  warning: false
+  message: false
+---
 
 ```{r}
-#| echo: True
+#| echo: false
+
+library(ggplot2)
+library(corrplot)
+library(FactoMineR)
+library(factoextra)
+library(gridExtra)
+library(knitr)
+library(reshape2)
+```
+
+# Etude du jeu de données
+
+```{r}
+#| echo: false
+#| label: tbl-tabiris
+#| tbl-cap: "Les premières lignes du jeu de données DataGym"
+
 Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
 ```
-
-```{r}
-head(Data)
-```
-
-
 
 ```{r}
 Data$type=as.factor(Data$type)
 Data$level=as.factor(Data$level)
 Data$gender=as.factor(Data$gender)
-head(Data)
 ```
 
+Les données sont composées de `973` individus, de 3 variables **qualitatives** `type`, `gender` et `level`, et de `10` autres variables **quantitatives**
+
+## Statistiques descriptives
+
+### Variables quantitatives
+
+Pour étudier les corrélations et liaisons entre les variables, nous étudions d'abord la matrice de corrélation des variables quantitatives :
+
+```{r}
+#| echo: false
+#| label: tbl-tabiris
+#| tbl-cap: "Les premières lignes du jeu de données DataGym"
+
+Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
+```
 
 ```{r}
 corrplot(cor(Data[,-c(2,8,12)]), method="ellipse", type="lower")
 ```
+
+Certaines variables sont fortement corrélées, comme `bmi` et `weight` ou `fat` et `calories`.
+
+### La variable *Species*
+
+Nous commençons par la variable *Species* (vecteur $Y$) qui est une variable qualitative. La @fig-species nous permet de contrôler que nous avons bien $50$ individus par espèce.
+
+```{r}
+#| echo: false
+#| fig-cap: "Barplot de la variable Species"
+#| label: fig-species
+#| fig-height: 2
+
+ggplot(iris,aes(x=Species))+
+  geom_bar()
+```
+
+### Les 4 variables quantitatives
+
+Nous nous intéressons maintenant aux 4 variables quantitatives (matrice $X$). La @fig-corrplot montre les corrélations entre les 4 variables. On peut remarquer que la largeur et la longuer des pétales sont fortement corrélées positivement, ce n'est pas le cas pour les sépales.
+
+```{r}
+#| echo: false
+#| label: fig-corrplot
+#| fig-cap: "Matrice des corrélations entre les 4 variables quantitatives"
+#| fig-height: 3
+corrplot(cor(iris[,-5]), method="ellipse")
+```
+
+A l'aide de la librairie `FactoMineR`, on met en place une ACP. On représente en @fig-ACP les individus projetés sur le premier plan factoriel, la couleur correspondant à l'espèce ainsi que les corrélations des variables quantitatives initiales avec les deux premières composantes principales.
+
+```{r}
+#| fig-height: 5
+#| layout-ncol: 2
+#| label: fig-ACP
+#| fig-cap: Résultats de l'ACP
+#| fig-subcap: 
+#|   - "Projection des individus dans le premier plan factoriel"
+#|   - "Corrélation entre les variables et les deux premières composantes principales"
+respca=PCA(iris,quali.sup=5,graph=F)
+fviz_pca_ind(respca,label="none",habillage=5)+
+  theme(legend.position="bottom")
+fviz_pca_var(respca) 
+```
+
+On peut remarquer que les *Setosa* se distinguent des deux autres espèces principalement par la largeur de leur sépales. On peut appuyer ce point à l'aide de la @fig-violin.
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| message: false
+#| label: fig-violin
+#| fig-cap: "Violin plots de la largeur des sépales pour chaque espèce"
+
+ggplot(iris,aes(x=Species,y=Sepal.Width)) +
+  geom_violin() +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+# References
