@@ -1,9 +1,5 @@
 # todo test
 
-
-
-
-
 ```{r}
 #| echo: True
 Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
@@ -13,8 +9,6 @@ Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
 head(Data)
 ```
 
-
-
 ```{r}
 Data$type=as.factor(Data$type)
 Data$level=as.factor(Data$level)
@@ -22,7 +16,26 @@ Data$gender=as.factor(Data$gender)
 head(Data)
 ```
 
-
 ```{r}
 corrplot(cor(Data[,-c(2,8,12)]), method="ellipse", type="lower")
+```
+
+```{r}
+resMCA = MCA(Data[,c(2,8,12)])
+resMCA
+```
+
+```{r}
+fviz_mca(resMCA, axes = c(1,2), repel=T, invisible=c("ind"))
+```
+
+```{r}
+fviz_contrib(resMCA, choice = c("ind"))
+fviz_contrib(resMCA, choice = c("var"))
+fviz_mca_var(resMCA, choice = "mca.cor", 
+            repel = TRUE, 
+            ggtheme = theme_minimal())
+```
+
+```{}
 ```
