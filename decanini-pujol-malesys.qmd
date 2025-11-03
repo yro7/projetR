@@ -9,5 +9,20 @@
 Data = read.table("DataGym-projet4modIA-2526.csv",header=TRUE)
 ```
 
+```{r}
+head(Data)
+```
 
 
+
+```{r}
+Data$type=as.factor(Data$type)
+Data$level=as.factor(Data$level)
+Data$gender=as.factor(Data$gender)
+head(Data)
+```
+
+
+```{r}
+corrplot(cor(Data[,-c(2,8,12)]), method="ellipse", type="lower")
+```
