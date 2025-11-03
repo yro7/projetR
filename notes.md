@@ -12,7 +12,9 @@
 
 bmi & weight: logique
 calories & duration
+fat et duration, calories, water & fat
 
+> Des variables sont très corrélées: une ACP / MCA est pertinente
 
 
 
