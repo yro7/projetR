@@ -121,42 +121,47 @@ ggplot(Data,aes(x=gender,y=bmi)) +
 
 différents profils: en fonction du type \> différente répartition des IMC (strength souvent + lourds)
 
-## ACP
+# ACP centrée réduite (car les variables ne sont pas à la même échelle).
+
+```{r}
+respca <-PCA(Data,scale.unit=T,graph=F,quali.sup = c(2,8,12))
+fviz_eig(respca)
+respca$eig
+```
+
+```{r}
+fviz_pca_ind(respca,habillage=2)
+fviz_pca_var(respca)
+```
+
+```{r}
+fviz_pca_ind(respca,habillage=12)
+```
+
+```{r}
+fviz_contrib(respca,choice="ind",axes=1)
+```
 
 ## MCA
 
-Nous nous intéressons maintenant aux 4 variables quantitatives (matrice $X$). La @fig-corrplot montre les corrélations entre les 4 variables. On peut remarquer que la largeur et la longuer des pétales sont fortement corrélées positivement, ce n'est pas le cas pour les sépales.
-
 ```{r}
-#| echo: false
-#| label: fig-corrplot
-#| fig-cap: "Matrice des corrélations entre les 4 variables quantitatives"
-#| fig-height: 3
+resMCA = MCA(Data[,c(2,8,12)])
+resMCA
 ```
 
-A l'aide de la librairie `FactoMineR`, on met en place une ACP. On représente en @fig-ACP les individus projetés sur le premier plan factoriel, la couleur correspondant à l'espèce ainsi que les corrélations des variables quantitatives initiales avec les deux premières composantes principales. Non Marin c'est nul
-
 ```{r}
-#| fig-height: 5
-#| layout-ncol: 2
-#| label: fig-ACP
-#| fig-cap: Résultats de l'ACP
-#| fig-subcap: 
-#|   - "Projection des individus dans le premier plan factoriel"
-#|   - "Corrélation entre les variables et les deux premières composantes principales"
-fviz_pca_ind(respca,label="none",habillage=5)+
-  theme(legend.position="bottom")
-fviz_pca_var(respca) 
+fviz_mca(resMCA, axes = c(1,2), repel=T, invisible=c("ind"))
 ```
 
-On peut remarquer que les *Setosa* se distinguent des deux autres espèces principalement par la largeur de leur sépales. On peut appuyer ce point à l'aide de la @fig-violin.
-
 ```{r}
-#| echo: false
-#| fig-height: 3
-#| message: false
-#| label: fig-violin
-#| fig-cap: "Violin plots de la largeur des sépales pour chaque espèce"
+fviz_contrib(resMCA, choice = c("ind"))
+fviz_contrib(resMCA, choice = c("var"))
+fviz_mca_var(resMCA, choice = "mca.cor", 
+            repel = TRUE, 
+            ggtheme = theme_minimal())
+```
+
+```         
 ```
 
 # References
